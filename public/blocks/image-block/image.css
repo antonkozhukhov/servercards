@@ -1,0 +1,18 @@
+@import url(./image_close_button.css);
+@import url(./image_open.css);
+@import url(./image_src.css);
+@import url(./image__content.css);
+
+
+.image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  display: none;
+  }

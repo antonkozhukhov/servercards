@@ -1,0 +1,37 @@
+.popup__button_save_profile {
+  width: 100%;
+    border: 1px solid rgba(0, 0, 0, .2);
+  margin-top: 48px;
+  color: rgba(0, 0, 0, .2);
+  
+  font-family: Inter;
+font-style: normal;
+font-weight: normal;
+font-size: 18px;
+line-height: 22px;
+text-align: center;
+color: #000000;
+
+opacity: 0.2;
+}
+.popup__button_save_profile__valid{
+  background: #000000;
+  color: #FFFFFF;
+  opacity: 1;
+}
+.popup__button_save_avatar {
+  width: 100%;
+    border: 1px solid rgba(0, 0, 0, .2);
+  margin-top: 48px;
+  color: rgba(0, 0, 0, .2);
+  
+  font-family: Inter;
+font-style: normal;
+font-weight: normal;
+font-size: 18px;
+line-height: 22px;
+text-align: center;
+color: #000000;
+
+opacity: 0.2;
+}
