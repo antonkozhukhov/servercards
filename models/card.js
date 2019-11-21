@@ -1,4 +1,3 @@
-/* eslint-disable linebreak-style */
 const mongoose = require('mongoose');
 
 const cardSchema = new mongoose.Schema({
@@ -16,6 +15,7 @@ const cardSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
+    required: true,
   },
   likes: {
     type: [{

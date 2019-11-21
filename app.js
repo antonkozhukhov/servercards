@@ -1,13 +1,8 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable quote-props */
-/* eslint-disable quotes */
-/* eslint-disable import/newline-after-import */
-/* eslint-disable linebreak-style */
 
 const bodyParser = require('body-parser');
 const express = require('express');
+
 const app = express();
-const path = require('path');
 const mongoose = require('mongoose');
 
 app.use(bodyParser.json());
@@ -35,7 +30,6 @@ app.use((req, res, next) => {
 });
 app.use('/cards', cards);
 app.use('/users', users);
-app.get('/', (req, res) => {
-  res.status(404).send({ 'message': 'Запрашиваемый ресурс не найден' });
+app.get('/*', (req, res) => {
+  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
-app.use(express.static(path.join(__dirname, 'public')));

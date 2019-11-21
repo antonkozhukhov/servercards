@@ -1,4 +1,3 @@
-/* eslint-disable linebreak-style */
 /* eslint-disable no-unused-vars */
 
 const User = require('../models/user');
@@ -13,7 +12,7 @@ module.exports.findUser = (req, res) => {
     .then((user) => {
       if (!user) {
         res.status(404).send({ message: 'такого пользователя нет' });
-      } res.send(user);
+      } else res.send(user);
     })
     .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
 };
@@ -23,7 +22,7 @@ module.exports.createUser = (req, res) => {
     .then((user) => {
       if (!user) {
         res.status(404).send({ message: 'ошибка в параметрах' });
-      } res.send(user);
+      } else res.send(user);
     })
     .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
 };
@@ -34,8 +33,7 @@ module.exports.updateUser = (req, res) => {
     .then((user) => {
       if (!user) {
         res.status(404).send({ message: 'нет такого пользователя' });
-      }
-      res.send(user);
+      } else res.send(user);
     })
     .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
 };
@@ -46,8 +44,7 @@ module.exports.updateAvatar = (req, res) => {
     .then((user) => {
       if (!user) {
         res.status(404).send({ message: 'нет такого пользователя' });
-      }
-      res.send(user);
+      } else res.send(user);
     })
     .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
 };
