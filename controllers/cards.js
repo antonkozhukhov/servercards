@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 /* eslint-disable no-unused-vars */
 
 const Card = require('../models/card');
@@ -19,14 +20,20 @@ module.exports.postCard = (req, res) => {
     .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
+  Card.findById(req.params.id)
     .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'такой карточки нет' });
-      } else res.send(card);
+      if (card.owner == req.user._id) {
+        Card.findByIdAndRemove(req.params.id)
+          .then((card1) => {
+            if (!card1) {
+              res.status(404).send({ message: 'такой карточки нет' });
+            } else res.send(card);
+          });
+      }
     })
     .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
 };
+
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,

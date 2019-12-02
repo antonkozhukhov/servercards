@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
 module.exports.getUsers = (req, res) => {
@@ -17,14 +18,20 @@ module.exports.findUser = (req, res) => {
     .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: 'ошибка в параметрах' });
-      } else res.send(user);
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
     })
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
+      .then((user) => {
+        if (!user) {
+          res.status(404).send({ message: 'ошибка в параметрах' });
+        } else res.send(user);
+      })
+      .catch((err) => res.status(500).send({ message: 'Произошла ошибка' })));
 };
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
