@@ -1,14 +1,11 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable indent */
-/* eslint-disable import/newline-after-import */
-/* eslint-disable linebreak-style */
-/* eslint-disable no-trailing-spaces */
-const router = require('express').Router(); 
-const fs = require('fs');
-const path = require('path');
-const filepath = path.join(__dirname, '../data/cards.json'); 
-const data = JSON.parse(fs.readFileSync(filepath));
-router.get('/cards', (req, res) => {
-res.send(data);
-});
+const router = require('express').Router();
+const {
+  getCards, postCard, deleteCard, likeCard, dislikeCard,
+} = require('../controllers/cards');
+
+router.get('', getCards);
+router.post('', postCard);
+router.delete('/:id', deleteCard);
+router.put('/:cardId/likes', likeCard);
+router.delete('/:cardId/likes', dislikeCard);
 module.exports = router;

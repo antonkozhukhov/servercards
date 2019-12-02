@@ -1,9 +1,11 @@
-const router = require('express').Router(); 
-const fs = require('fs');
-const path = require('path');
-const filepath = path.join(__dirname, '../data/users.json'); 
-const data = JSON.parse(fs.readFileSync(filepath));
-router.get('/users', (req, res) => {
-res.send(data);
-});
+const router = require('express').Router();
+const {
+  getUsers, findUser, createUser, updateUser, updateAvatar,
+} = require('../controllers/users');
+
+router.get('', getUsers);
+router.get('/:id', findUser);
+router.post('', createUser);
+router.patch('/me', updateUser);
+router.patch('/me/avatar', updateAvatar);
 module.exports = router;
