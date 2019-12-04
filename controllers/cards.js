@@ -3,23 +3,23 @@
 
 const Card = require('../models/card');
 
-module.exports.getCards = (req, res) => {
+const getCards = (req, res) => {
   Card.find({})
     .then((card) => res.send(card))
     .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
 };
-module.exports.postCard = (req, res) => {
+const postCard = (req, res) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'ошибка в параметрах' });
-      } else res.send(card);
+        res.status(400).send({ message: 'ошибка в параметрах' });
+      } else res.status(201).send(card);
     })
     .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
 };
-module.exports.deleteCard = (req, res) => {
+const deleteCard = (req, res) => {
   Card.findById(req.params.id)
     .then((card) => {
       if (card.owner == req.user._id) {
@@ -28,13 +28,14 @@ module.exports.deleteCard = (req, res) => {
             if (!card1) {
               res.status(404).send({ message: 'такой карточки нет' });
             } else res.send(card);
-          });
-      }
+          })
+          .catch((err) => res.status(404).send({ message: 'Произошла ошибка' }));
+      } else res.status(403).send({ message: 'Нельзя удалять чужие карточки' });
     })
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => res.status(404).send({ message: 'такой карточки нет' }));
 };
 
-module.exports.likeCard = (req, res) => {
+const likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -47,7 +48,7 @@ module.exports.likeCard = (req, res) => {
     })
     .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
 };
-module.exports.dislikeCard = (req, res) => {
+const dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -59,4 +60,7 @@ module.exports.dislikeCard = (req, res) => {
       } else res.send(card);
     })
     .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
+};
+module.exports = {
+  getCards, postCard, deleteCard, likeCard, dislikeCard,
 };

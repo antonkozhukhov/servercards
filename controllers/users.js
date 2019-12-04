@@ -3,12 +3,12 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
-module.exports.getUsers = (req, res) => {
+const getUsers = (req, res) => {
   User.find({})
     .then((user) => res.send(user))
     .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
 };
-module.exports.findUser = (req, res) => {
+const findUser = (req, res) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
@@ -17,23 +17,24 @@ module.exports.findUser = (req, res) => {
     })
     .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
 };
-module.exports.createUser = (req, res) => {
+const createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-
-  bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      name, about, avatar, email, password: hash,
-    })
-      .then((user) => {
-        if (!user) {
-          res.status(404).send({ message: 'ошибка в параметрах' });
-        } else res.send(user);
+  if (password) {
+    bcrypt.hash(password, 10)
+      .then((hash) => User.create({
+        name, about, avatar, email, password: hash,
       })
-      .catch((err) => res.status(500).send({ message: 'Произошла ошибка' })));
+        .then((user) => {
+          if (!user) {
+            res.status(400).send({ message: 'ошибка в параметрах' });
+          } else res.status(201).send(user);
+        })
+        .catch((err) => res.status(500).send({ message: 'Произошла ошибка' })));
+  } else res.status(404).send({ message: 'ошибка в параметрах' });
 };
-module.exports.updateUser = (req, res) => {
+const updateUser = (req, res) => {
   const { name, about } = req.body;
   const { _id } = req.user;
   User.findByIdAndUpdate(_id, { name, about }, { runValidators: true })
@@ -44,7 +45,7 @@ module.exports.updateUser = (req, res) => {
     })
     .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
 };
-module.exports.updateAvatar = (req, res) => {
+const updateAvatar = (req, res) => {
   const { avatar } = req.body;
   const { _id } = req.user;
   User.findByIdAndUpdate(_id, { avatar }, { runValidators: true })
@@ -54,4 +55,7 @@ module.exports.updateAvatar = (req, res) => {
       } else res.send(user);
     })
     .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
+};
+module.exports = {
+  getUsers, findUser, createUser, updateUser, updateAvatar,
 };

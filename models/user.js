@@ -1,6 +1,7 @@
 /* eslint-disable func-names */
 const mongoose = require('mongoose');
 const isEmail = require('validator/lib/isEmail');
+const isURL = require('validator/lib/isURL');
 const bcrypt = require('bcryptjs');
 
 
@@ -33,7 +34,9 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     required: true,
-    match: /^http[s]?:\/\/(www.)?[a-z0-9_-]*/,
+    validate: {
+      validator: (v) => isURL(v),
+    },
   },
 });
 userSchema.statics.findUserByCredentials = function (email, password) {
