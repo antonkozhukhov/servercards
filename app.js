@@ -37,6 +37,11 @@ app.listen(PORT, () => {
 app.use(limiter);
 app.use(helmet());
 app.use(requestLogger);
+app.get('/crash-test', () => {
+  setTimeout(() => {
+      throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
 app.use('/cards', auth, cards);
 app.use('/users', auth, users);
 app.post('/signin', celebrate({
