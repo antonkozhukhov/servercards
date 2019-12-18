@@ -60,7 +60,7 @@ app.post('/signup', celebrate({
   }),
 }), createUser);
 app.use('/*', (req, res) => {
-  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
+  res.status(404).send({ message: 'Запрашиваемый ресурс не найден1' });
 });
 app.use(errorLogger);
 app.use(errors());
