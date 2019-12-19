@@ -1,5 +1,3 @@
-/* eslint-disable eqeqeq */
-/* eslint-disable no-unused-vars */
 
 const Card = require('../models/card');
 const NotFoundCardError = require('../middlewares/not-found-card-error');
@@ -25,7 +23,7 @@ const postCard = (req, res, next) => {
 const deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
     .then((card) => {
-      if (card.owner == req.user._id) {
+      if (card.owner === req.user._id) {
         Card.findByIdAndRemove(req.params.id)
           .then((card1) => {
             if (!card1) {

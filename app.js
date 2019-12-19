@@ -10,6 +10,7 @@ const app = express();
 const mongoose = require('mongoose');
 const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+
 const { NODE_ENV, JWT_SECRET } = process.env;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -39,7 +40,7 @@ app.use(helmet());
 app.use(requestLogger);
 app.get('/crash-test', () => {
   setTimeout(() => {
-      throw new Error('Сервер сейчас упадёт');
+    throw new Error('Сервер сейчас упадёт');
   }, 0);
 });
 app.use('/cards', auth, cards);
@@ -74,4 +75,5 @@ app.use((err, req, res, next) => {
         ? 'На сервере произошла ошибка'
         : message,
     });
+  next();
 });
