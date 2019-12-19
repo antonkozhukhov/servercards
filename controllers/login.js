@@ -1,14 +1,20 @@
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const AuthError = require('../middlewares/auth-error');
+const localKey = require('../config');
 
-
-module.exports.login = (req, res) => {
+const { NODE_ENV, JWT_SECRET } = process.env;
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-
+  const key = NODE_ENV === 'production' ? JWT_SECRET : localKey;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-
+      const token = jwt.sign(
+        { _id: user._id },
+        key,
+        { expiresIn: '7d' },
+      );
       res.cookie('jwt', token, {
         maxAge: 3600000,
         httpOnly: true,
@@ -16,7 +22,8 @@ module.exports.login = (req, res) => {
       });
       res.send(token);
     })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
-    });
+    .catch(() => {
+      throw new AuthError('Необходима1 авторизация');
+    })
+    .catch(next);
 };

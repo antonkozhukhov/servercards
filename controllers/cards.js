@@ -1,41 +1,42 @@
-/* eslint-disable eqeqeq */
-/* eslint-disable no-unused-vars */
 
 const Card = require('../models/card');
+const NotFoundCardError = require('../middlewares/not-found-card-error');
+const ParametersError = require('../middlewares/parameters-error');
+const NotFoundError = require('../middlewares/not-found-error');
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   Card.find({})
     .then((card) => res.send(card))
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(next);
 };
-const postCard = (req, res) => {
+const postCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((card) => {
       if (!card) {
-        res.status(400).send({ message: 'ошибка в параметрах' });
+        throw new ParametersError('ошибка в параметрах');
       } else res.status(201).send(card);
     })
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(next);
 };
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
     .then((card) => {
-      if (card.owner == req.user._id) {
+      if (card.owner === req.user._id) {
         Card.findByIdAndRemove(req.params.id)
           .then((card1) => {
             if (!card1) {
-              res.status(404).send({ message: 'такой карточки нет' });
+              throw new NotFoundError('такой карточки нет');
             } else res.send(card);
           })
-          .catch((err) => res.status(404).send({ message: 'Произошла ошибка' }));
-      } else res.status(403).send({ message: 'Нельзя удалять чужие карточки' });
+          .catch(next);
+      } else throw new NotFoundCardError('Нельзя удалять чужие карточки');
     })
-    .catch((err) => res.status(404).send({ message: 'такой карточки нет' }));
+    .catch(next);
 };
 
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -43,12 +44,12 @@ const likeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'такой карточки нет' });
+        throw new NotFoundError('такой карточки нет');
       } else res.send(card);
     })
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(next);
 };
-const dislikeCard = (req, res) => {
+const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -56,10 +57,10 @@ const dislikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'такой карточки нет' });
+        throw new NotFoundError('такой карточки нет');
       } else res.send(card);
     })
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(next);
 };
 module.exports = {
   getCards, postCard, deleteCard, likeCard, dislikeCard,

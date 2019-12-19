@@ -2,22 +2,24 @@
 
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+const ParametersError = require('../middlewares/parameters-error');
+const NotFoundError = require('../middlewares/not-found-error');
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((user) => res.send(user))
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(next);
 };
-const findUser = (req, res) => {
+const findUser = (req, res, next) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'такого пользователя нет' });
+        throw new NotFoundError('такого пользователя нет');
       } else res.send(user);
     })
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(next);
 };
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -25,36 +27,36 @@ const createUser = (req, res) => {
     bcrypt.hash(password, 10)
       .then((hash) => User.create({
         name, about, avatar, email, password: hash,
+      }))
+      .then((user) => {
+        if (!user) {
+          throw new ParametersError('ошибка1 в параметрах');
+        } else res.status(201).send(user);
       })
-        .then((user) => {
-          if (!user) {
-            res.status(400).send({ message: 'ошибка в параметрах' });
-          } else res.status(201).send(user);
-        })
-        .catch((err) => res.status(500).send({ message: 'Произошла ошибка' })));
-  } else res.status(404).send({ message: 'ошибка в параметрах' });
+      .catch(next);
+  } else throw new ParametersError('ошибка2 в параметрах');
 };
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const { name, about } = req.body;
   const { _id } = req.user;
   User.findByIdAndUpdate(_id, { name, about }, { runValidators: true })
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'нет такого пользователя' });
+        throw new NotFoundError('такого пользователя нет');
       } else res.send(user);
     })
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(next);
 };
-const updateAvatar = (req, res) => {
+const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   const { _id } = req.user;
   User.findByIdAndUpdate(_id, { avatar }, { runValidators: true })
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'нет такого пользователя' });
+        throw new NotFoundError('такого пользователя нет');
       } else res.send(user);
     })
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(next);
 };
 module.exports = {
   getUsers, findUser, createUser, updateUser, updateAvatar,
